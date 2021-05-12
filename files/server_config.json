@@ -1,0 +1,11 @@
+{
+    "PORT": 4242,
+    "PREFER_IP_V4": true,
+    "SQL": {
+        "DATABASE_PATH": "files/database.db",
+        "CONFIG_PATH": "files/createDB.sql"
+    },
+    "LOG": {
+        "DEBUG_PATH": "debug.log"
+    }
+}
