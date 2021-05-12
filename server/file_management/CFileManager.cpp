@@ -166,7 +166,30 @@ bool babel::server::CFileManager::existUser(const std::string &username, const s
 {
     const std::string query = SELECT_EXIST_USER_QUERY(username, password);
     babel::server::QueryRows queryResult;
+    
+    if (_sqlInstance->IsOpen()) {
+        try
+        {
+            queryResult = _sqlInstance->GetResultCommand(query);
 
+            if (queryResult.empty() == true) {
+                return false;
+            } else 
+                return queryResult[0][0].second == username;        
+        }
+        catch(const std::exception& e)
+        {
+            throw e;
+        }
+    }
+    return false;
+}
+
+bool babel::server::CFileManager::existUsername(const std::string &username) const
+{
+    const std::string query = SELECT_EXIST_USERNAME_QUERY(username);
+    babel::server::QueryRows queryResult;
+    
     if (_sqlInstance->IsOpen()) {
         try
         {
@@ -187,8 +210,9 @@ bool babel::server::CFileManager::existUser(const std::string &username, const s
 
 bool babel::server::CFileManager::authentificateUser(babel::server::CServerClient &client, const std::string &username, const std::string &password) const
 {
-    const std::string statement = "SELECT * FROM Users WHERE Username = " + username + " AND Password = " + password + ";";
+    const std::string statement = "SELECT * FROM Users WHERE Username LIKE '" + username + "' AND Password LIKE '" + password + "';";
 
+    (void)password;
     if (existUser(username, password) == false) {
         return false;
     } else {
@@ -214,4 +238,60 @@ bool babel::server::CFileManager::authentificateUser(babel::server::CServerClien
         }
     }
     return true;
+}
+
+void babel::server::CFileManager::addContactList(int idFrom, const std::string &usernameToFind) const
+{
+    if (_sqlInstance->IsOpen()) {
+        const std::string findContactIdQuery = "(SELECT Id FROM Users WHERE Username LIKE " + formatSql(usernameToFind) + ")";
+        const std::string query = "INSERT INTO ContactList(IdUser, IdContact, DateCR) values (" + std::to_string(idFrom) + ", " + findContactIdQuery + ", date('now'));";
+        
+        try
+        {
+            _sqlInstance->ExecuteCommand(query);
+        }
+        catch(const std::exception& e)
+        {
+            throw e;
+        }
+    }
+}
+
+void babel::server::CFileManager::removeContact(int id) const
+{
+    if (_sqlInstance->IsOpen()) {
+        const std::string query = "DELETE FROM ContactList WHERE Id = " + std::to_string(id) + ";";
+        
+        try
+        {
+            _sqlInstance->ExecuteCommand(query);
+        }
+        catch(const std::exception& e)
+        {
+            throw e;
+        }
+    }
+}
+
+std::vector<int> babel::server::CFileManager::getListContact(int id)
+{
+    std::vector<int> contactList;
+
+    if (_sqlInstance->IsOpen()) {
+        const std::string query = "SELECT IdContact FROM ContactList WHERE IdUser = " + std::to_string(id) + ";";
+        
+        try
+        {
+            babel::server::QueryRows queryResult = _sqlInstance->GetResultCommand(query);
+
+            for (const auto &x : queryResult) {
+                contactList.push_back(std::atoi(x[0].second.c_str()));
+            }
+        }
+        catch(const std::exception& e)
+        {
+            throw e;
+        }
+    }
+    return contactList;
 }

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(CPP_babel_2018)
+project(CPP_babel_2019)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
 set(RUNTIME_OUTPUT_DIRECTORY build)
 set(CMAKE_CXX_STANDARD 17)
@@ -66,9 +66,11 @@ set(SRCS_SERVER
     server/file_management/CSQLite.cpp
     server/file_management/CFileManager.cpp
     server/clients/CServerClient.cpp
+    server/clients/CUdpClient.cpp
     server/server/src/CServer.cpp
     server/server/src/CTcpConnection.cpp
     server/server/src/CTcpServer.cpp
+    server/server/src/CUdpServer.cpp
     server/server/src/CCommandHandler.cpp
 )
 
@@ -87,6 +89,9 @@ set(SRCS_CLIENT
     client/clientSocket/QtSocket.cpp  
     client/src/portAudio/CAudio.cpp
     client/src/opus/COpus.cpp
+    client/clientSocket/QtDataSocket.cpp
+    client/clientUI/chatScreen/CCallManager.cpp 
+    client/clientUI/chatScreen/ContactInfo.cpp 
 )
 
 set(SRCS_COMMON
@@ -110,19 +115,19 @@ endif()
 target_link_libraries(babel_client Qt5::Widgets Qt5::Core Qt5::Gui Qt5::Network)
 
 if(WIN32)
-	target_link_libraries(babel_server libboost_system libboost_thread libboost_serialization
+	target_link_libraries(babel_server libboost_system libboost_chrono libboost_thread libboost_serialization
         Threads::Threads sqlite3)
 	target_link_libraries(babel_client portaudio_x64)
-    target_link_libraries(babel_client libboost_system libboost_thread libboost_serialization Threads::Threads opus)
+    target_link_libraries(babel_client libboost_system libboost_chrono libboost_thread libboost_serialization Threads::Threads opus)
 elseif (UNIX)
-	target_link_libraries(babel_server boost_system boost_thread boost_serialization
+	target_link_libraries(babel_server boost_system boost_chrono boost_thread boost_serialization
         Threads::Threads sqlite3 dl)
-	target_link_libraries(unit_test boost_system boost_thread boost_serialization
+	target_link_libraries(unit_test boost_system boost_chrono boost_thread boost_serialization
         Threads::Threads sqlite3 Qt5::Widgets Qt5::Network dl criterion gcov jack asound portaudio opus)
 	target_link_libraries(babel_client jack asound)
 	target_link_libraries(babel_client portaudio opus)
 	target_compile_options(unit_test PRIVATE -fprofile-arcs -ftest-coverage)
-    target_link_libraries(babel_client boost_system boost_thread Threads::Threads opus boost_serialization)
+    target_link_libraries(babel_client boost_system boost_chrono boost_thread Threads::Threads opus boost_serialization)
 endif()
 
 file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/bin/qt.conf "[Paths]\nPrefix = ")

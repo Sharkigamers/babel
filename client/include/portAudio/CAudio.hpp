@@ -67,8 +67,8 @@ namespace babel {
                 void setSample(int sampleRate) { _sampleRate = sampleRate; };
                 void setFramePerBuffer(long framePerBuffer) { _framePerBuffer = framePerBuffer; };
 
-                std::vector<uint32_t> recordAudio();
-                void playAudio(std::vector<uint32_t> writeableBuffer);
+                std::vector<uint16_t> recordAudio();
+                void playAudio(std::vector<uint16_t> writeableBuffer);
 
             protected:
             private:
@@ -82,7 +82,7 @@ namespace babel {
                 bool _playRunning = false;
 
                 short _channelNumber = 1; /* one for output and one for input */
-                int _sampleRate = 48000; /* 41000 for low sample rate but can generate warnings (not stable ) */
+                int _sampleRate = 24000; /* 41000 for low sample rate but can generate warnings (not stable ) */
                 long _framePerBuffer = 480; /* Not too small for not sending too much packets */
         };
 

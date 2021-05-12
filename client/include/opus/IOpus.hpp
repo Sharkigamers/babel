@@ -22,8 +22,8 @@ namespace babel {
                 virtual void destroy_encoder() = 0;
                 virtual void destroy_decoder() = 0;
 
-                virtual std::vector<uint32_t> encode(std::vector<uint32_t> encodableBuffer) = 0;
-                virtual std::vector<uint32_t> decode(std::vector<uint32_t> encoded) = 0;
+                virtual std::vector<uint16_t> encode(const std::vector<uint16_t> &encodableBuffer) = 0;
+                virtual std::vector<uint16_t> decode(const std::vector<uint16_t> &encoded) = 0;
 
             protected:
             private:

@@ -23,10 +23,12 @@ namespace babel {
                 static std::shared_ptr<babel::protocol::Message> createMessage(bool, int, int, babel::protocol::messageType, babel::protocol::messageCategory, babel::protocol::messageStatus, const std::string &message);
                 static std::shared_ptr<babel::protocol::Message> createConnectionMessage(int, int, const std::string &message);
                 static std::shared_ptr<babel::protocol::Message> createCallMessage(int, int, const std::string &message);
+                static std::shared_ptr<babel::protocol::Message> createAcceptCallMessage(int, int, const std::string &message);
                 static std::shared_ptr<babel::protocol::Message> createHangupMessage(int, int, const std::string &message);
                 static std::shared_ptr<babel::protocol::Message> createAddContactMessage(int, int, const std::string &message);
-                static std::shared_ptr<babel::protocol::Message> createGetAllContactsMessage(int, int, const std::string &message);
+                static std::shared_ptr<babel::protocol::Message> createPartialContactsMessage(int, int, const std::string &message);
                 static std::shared_ptr<babel::protocol::Message> createMuteContactMessage(int, int, const std::string &message);
+                static std::shared_ptr<babel::protocol::Message> createCreateAccountMessage(int, int, const std::string &message);
                 
                 static std::shared_ptr<babel::protocol::Message> createResponseOK(int, int, babel::protocol::messageCategory, const std::string &message);
                 static std::shared_ptr<babel::protocol::Message> createResponseKO(int, int, babel::protocol::messageCategory, const std::string &message);

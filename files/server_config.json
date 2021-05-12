@@ -1,5 +1,5 @@
 {
-    "PORT": 4242,
+    "PORT": 42422,
     "PREFER_IP_V4": true,
     "SQL": {
         "DATABASE_PATH": "files/database.db",

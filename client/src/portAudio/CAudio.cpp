@@ -112,11 +112,11 @@ void babel::client::CAudio::setStreamParameters()
     _paramInput.channelCount = _channelNumber;
     _paramOutput.channelCount = _channelNumber;
 
-    _paramInput.sampleFormat = paFloat32; /* need to adapt buffer */
-    _paramOutput.sampleFormat = paFloat32; /* need to adapt buffer */
+    _paramInput.sampleFormat = paInt16; /* need to adapt buffer */
+    _paramOutput.sampleFormat = paInt16; /* need to adapt buffer */
 
-    _paramInput.suggestedLatency = Pa_GetDeviceInfo(_paramInput.device)->defaultLowInputLatency;
-    _paramOutput.suggestedLatency = Pa_GetDeviceInfo(_paramOutput.device)->defaultLowOutputLatency;
+    _paramInput.suggestedLatency = Pa_GetDeviceInfo(_paramInput.device)->defaultHighInputLatency;
+    _paramOutput.suggestedLatency = Pa_GetDeviceInfo(_paramOutput.device)->defaultHighOutputLatency;
 
     _paramOutput.hostApiSpecificStreamInfo = NULL;
     _paramInput.hostApiSpecificStreamInfo = NULL;
@@ -159,9 +159,9 @@ void babel::client::CAudio::openPlayAudio()
     }
 }
 
-std::vector<uint32_t> babel::client::CAudio::recordAudio()
+std::vector<uint16_t> babel::client::CAudio::recordAudio()
 {
-    std::vector<uint32_t> readableBuffer(_framePerBuffer);
+    std::vector<uint16_t> readableBuffer(_framePerBuffer);
 
     /* to not read to a too hight size we check the readable size */
     signed long readableSize = Pa_GetStreamReadAvailable(_recordStream);
@@ -185,10 +185,10 @@ std::vector<uint32_t> babel::client::CAudio::recordAudio()
     return readableBuffer;
 }
 
-void babel::client::CAudio::playAudio(std::vector<uint32_t> writeableBuffer)
+void babel::client::CAudio::playAudio(std::vector<uint16_t> writeableBuffer)
 {
     /* if you do no wait enought it will crash */
-    while (Pa_GetStreamWriteAvailable(_playStream) < writeableBuffer.size());
+    // while (Pa_GetStreamWriteAvailable(_playStream) < (signed long)writeableBuffer.size());
 
     _error = Pa_WriteStream(
         _playStream,

@@ -79,30 +79,46 @@ babel::server::CServerClient &babel::server::CServerClient::operator=(const CSer
 
 void babel::server::CServerClient::readFromClient()
 {
-    (*getTcpConnection()->getSocket()).async_receive(boost::asio::buffer(_readBuffer, 4096), [this](const boost::system::error_code &error, std::size_t len) {
+    (*getTcpConnection()->getSocket()).async_read_some(boost::asio::buffer(_readBufferHeader, 8), [this](const boost::system::error_code &error, std::size_t len) {
         if (!error) {
-            babel::protocol::Message newMessage;
-            std::cout << len << std::endl;
-
-            if (len > 20) {
-                try
-                {
-                    std::string header(_readBuffer, len);
-                    std::string data = header.substr(8, len);
-                    std::istringstream archive_stream(data);
-                    boost::archive::text_iarchive archive(archive_stream);
-                    archive >> newMessage;
-                    _messageQueue.push_back(std::make_shared<babel::protocol::Message>(newMessage));
-                    static_cast<babel::server::CServer *>(_server->getInstance())->handleNewMessage(this);
-                }
-                catch(const std::exception& e)
-                {
-                    std::cerr << e.what() << '\n';
-                }
+            try
+            {
+                std::string header(_readBufferHeader, len);
+                std::size_t toRead = std::atof(header.c_str());
+                readDataFromClient(error, toRead);
             }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+        } else {
+            std::cout << (getUsername() == "" ? "Unconnected" : getUsername()) << " : Disconnected." << std::endl;
+            setIsLogedIn(false);
+        }
+    });
+}
+void babel::server::CServerClient::readDataFromClient(const boost::system::error_code &error, const std::size_t toRead)
+{
+    (void)error;
+	#if defined(_WIN32)
+		char *buffer = new char[toRead];
+	#else
+		char buffer[toRead];
+	#endif
+
+    (*getTcpConnection()->getSocket()).async_read_some(boost::asio::buffer(buffer, toRead), [this, &buffer](const boost::system::error_code &newError, std::size_t len) {
+        if (!newError) {
+            babel::protocol::Message newMessage;
+            
+            std::string newBuffer(buffer, len);
+            std::istringstream archive_stream(newBuffer);
+            boost::archive::text_iarchive archive(archive_stream);
+            archive >> newMessage;
+            _messageQueue.push_back(std::make_shared<babel::protocol::Message>(newMessage));
+            static_cast<babel::server::CServer *>(_server->getInstance())->handleNewMessage(this);
             readFromClient();
         } else {
-            std::cout << error.message() << std::endl;
+            std::cout << newError.message() << std::endl;
             setIsLogedIn(false);
         }
     });

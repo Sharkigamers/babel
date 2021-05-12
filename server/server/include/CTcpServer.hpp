@@ -12,6 +12,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/core/ref.hpp>
 #include <boost/bind.hpp>
+#include <boost/thread.hpp>
 #include <boost/tuple/tuple.hpp>
 #include <memory>
 #include <vector>
@@ -34,6 +35,7 @@ namespace babel {
 
                 void waitClient();
 
+
                 boost::asio::io_service& getIoService() { return _ioService; }
 
                 bool isNewClientAvailable() const { return !_clientsQueue.empty(); }
@@ -50,9 +52,15 @@ namespace babel {
                     }
                 };
 
+                std::vector<std::shared_ptr<babel::server::CServerClient> > getListClients() const
+                {
+                    return _clientsQueue;
+                }
+
                 template <typename T, typename Handler>
                 void writeToClient(babel::server::CServerClient &client, const T &t, Handler handler)
                 {
+                    (void)handler;
                     std::ostringstream archive_stream;
                     boost::archive::text_oarchive archive(archive_stream);
                     archive << t;
@@ -60,7 +68,7 @@ namespace babel {
 
                     std::ostringstream header_stream;
                     header_stream << std::setw(8)
-                        << std::hex << m_outbound_data.size();
+                        << m_outbound_data.size();
                     if (!header_stream || header_stream.str().size() != 8)
                     {
                         std::cout << "RIP" << std::endl;
@@ -74,13 +82,14 @@ namespace babel {
                     boost::asio::async_write(*client.getTcpConnection()->getSocket(), buffers, handler);
                 }
 
-            protected:
             private:
                 void acceptConnection(const boost::system::error_code& error, std::shared_ptr<babel::server::CTcpConnection>); // (3)
                 boost::asio::io_service _ioService;
                 std::shared_ptr<boost::asio::ip::tcp::acceptor> _acceptor;
                 std::vector<std::shared_ptr<babel::server::CServerClient> > _clientsQueue;
                 babel::server::IServer *_server;
+                boost::thread _clientWatcherThread;
+
         };
     }
 }

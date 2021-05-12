@@ -32,8 +32,8 @@ namespace babel {
                 void destroy_encoder() final;
                 void destroy_decoder() final;
 
-                std::vector<uint32_t> encode(std::vector<uint32_t> encodableBuffer) final;
-                std::vector<uint32_t> decode(std::vector<uint32_t> encoded) final;
+                std::vector<uint16_t> encode(const std::vector<uint16_t> &encodableBuffer) final;
+                std::vector<uint16_t> decode(const std::vector<uint16_t> &encoded) final;
 
             protected:
             private:
@@ -44,6 +44,7 @@ namespace babel {
                 short _channel; /* 1 channels generally */
 
                 int _error;
+                opus_int32 _encodedSize;
         };
 
 

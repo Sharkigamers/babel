@@ -94,6 +94,12 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <tabstops>
+  <tabstop>usernameEdit</tabstop>
+  <tabstop>passwordEdit</tabstop>
+  <tabstop>passwordEditConfirmation</tabstop>
+  <tabstop>confirmButton</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

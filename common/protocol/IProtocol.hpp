@@ -31,6 +31,7 @@ namespace babel {
             RESPONSE_OK,
             RESPONSE_KO,
             REQUEST_CALL,
+            ACCEPT_CALL,
             HANGUP,
             ADD_CONTACT,
             REMOVE_CONTACT,
@@ -78,7 +79,9 @@ namespace babel {
                     return *this;
                 }
 
-                Message() {};
+                Message()
+                    : _isRequest(false), _fromId(0), _toId(0), _messageType(NONE), _messageCategory(NO_CATEGORY), _messageStatus(NO_STATUS), _message("")
+                {};
                 ~Message() {};
 
                 int size() const noexcept

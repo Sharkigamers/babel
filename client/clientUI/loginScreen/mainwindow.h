@@ -17,7 +17,7 @@ namespace babel {
             Q_OBJECT
 
         public:
-            MainWindow(babel::client::QtSocket &, QWidget *parent = nullptr);
+            MainWindow(babel::client::QtSocket &, const std::string &, QWidget *parent = nullptr);
             ~MainWindow();
 
         private slots:
@@ -30,9 +30,10 @@ namespace babel {
 
         private:
             Ui::MainWindow *ui;
-            babel::client::chatWindow c;
-            babel::client::signInScreen s;
             babel::client::QtSocket &_socket;
+            std::unique_ptr<babel::client::chatWindow> chatScreen;
+            babel::client::signInScreen signInScreen;
+            std::string _serverIp;
         };
     }
 }

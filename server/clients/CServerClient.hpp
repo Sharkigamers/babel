@@ -22,7 +22,7 @@
 
 namespace babel {
     namespace server {
-        class CServerClient : public std::enable_shared_from_this<CServerClient>,  public babel::common::CAUser, public babel::common::ISQLSerializable {
+        class CServerClient : public babel::common::CAUser, public babel::common::ISQLSerializable {
             public:
                 explicit CServerClient(int id, const std::string &username, const std::string &password, bool isConnected);
                 explicit CServerClient(std::shared_ptr<babel::server::CTcpConnection> &tcpConnection);
@@ -53,6 +53,10 @@ namespace babel {
                 void readFromClient();
                 std::vector<std::shared_ptr<babel::protocol::Message> > &getMessageQueue() { return _messageQueue; }
                 void setServer(babel::server::IServer *server) { _server = server; }
+
+            private:
+                void readDataFromClient(const boost::system::error_code &error, const std::size_t toRead);
+
             protected:
             private:
                 int _id;
@@ -61,7 +65,7 @@ namespace babel {
                 std::shared_ptr<babel::server::CTcpConnection> _tcpConnection;
                 std::vector<std::shared_ptr<babel::protocol::Message> > _messageQueue;
                 babel::server::IServer *_server;
-                char _readBuffer[4096];
+                char _readBufferHeader[8];
         };
     }
 }

@@ -36,10 +36,11 @@ namespace babel {
                 QtSocket(const QString &, quint16);
                 ~QtSocket();
                 
-                void readFromServer();
+                std::shared_ptr<babel::protocol::Message> readFromServer();
                 template <typename T, typename Handler>
                 void writeToServer(const T &t, Handler handler)
                 {
+                    (void)handler;
                     std::ostringstream archive_stream;
                     boost::archive::text_oarchive archive(archive_stream);
                     archive << t;
@@ -47,7 +48,7 @@ namespace babel {
 
                     std::ostringstream header_stream;
                     header_stream << std::setw(8)
-                        << std::hex << m_outbound_data.size();
+                        << m_outbound_data.length();
                     if (!header_stream || header_stream.str().size() != 8)
                     {
                         std::cout << "RIP" << std::endl;
@@ -61,10 +62,14 @@ namespace babel {
                     std::string lopes = m_outbound_header + m_outbound_data;
                     _socket->write(lopes.c_str());
                 }
+                QString getHostName() const noexcept {
+                    return (_hostName);
+                }
 
             protected:
             private:
                 std::unique_ptr<QTcpSocket> _socket;
+                QString _hostName;
         };
     }
 }
