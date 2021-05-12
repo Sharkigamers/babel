@@ -1,5 +1,4 @@
 # babel
 Epitech
 
-# Merit:
-https://github.com/orgs/NysosEIP/people/ManuB123
+Go look at : https://github.com/ManuB123 he have done a big part of this project
